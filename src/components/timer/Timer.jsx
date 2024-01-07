@@ -1,8 +1,9 @@
 import './Timer.css'
 import { useState, useEffect } from 'react'; 
 
-export default function Timer({ time }) {
+export default function Timer({ time, activeTag }) {
     const [timerRunning, setTimerRunning] = useState(false);
+
     const [minutes, setMinutes] = useState(time.minutes);
     const [seconds, setSeconds] = useState(time.seconds);
 
@@ -15,6 +16,7 @@ export default function Timer({ time }) {
         
             return () => clearInterval(timer);
         }
+// FIX ME -- add functionality to end the timer
         else {
             clearInterval(timer);
         }
@@ -27,12 +29,13 @@ export default function Timer({ time }) {
             setSeconds(59);
         }
     }, [seconds])
-   
 
   return (
     <section className="timer__container">
-        <p>{minutes} : {seconds < 10 ? "0" + seconds : seconds}</p>
-
+{/* FIX ME -- on click, open form to change timer times */}
+        <button>{minutes} : {seconds < 10 ? "0" + seconds : seconds}</button>
+{/* FIX ME -- on click, open list of tags to select */}
+        <button>{activeTag.tagName}</button>
         {
             timerRunning ? (
                 <button onClick={() => setTimerRunning(false)}>Pause</button>
