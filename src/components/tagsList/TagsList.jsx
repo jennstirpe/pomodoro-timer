@@ -7,6 +7,13 @@ export default function TagsList({ tags, addNewTag, updateActiveTag }) {
     const [activeTagId, setActiveTagId] = useState("");
 
     useEffect(() => {
+        if (tags.length > 0) {
+            const firstTag = tags[0].id;
+            setActiveTagId(firstTag);
+        }
+    }, [])
+
+    useEffect(() => {
         if(activeTagId == "") {
             return;
         } else {

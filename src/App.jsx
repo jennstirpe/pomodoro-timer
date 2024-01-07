@@ -1,10 +1,10 @@
-import { useState, useRef } from "react"
+import { useState } from "react"
 import { Timer, TagsList } from "./components/index"
 
 function App() {
   const [time, setTime] = useState({
     minutes: 22,
-    seconds: 10,
+    seconds: 6,
   })
 
   const [tags, setTags] = useState([{
@@ -26,7 +26,9 @@ function App() {
 
   const [activeTag, setActiveTag] = useState({});
   
-
+function updateTime(newMin, newSec) {
+  setTime(t => ({...t, minutes: newMin, seconds: newSec}));
+}
 
 /*
   create list of objects to hold previous run timers
@@ -52,8 +54,7 @@ function updateActiveTag(id) {
 
   return (
     <>
-      <Timer time={time} activeTag={activeTag} /> 
-      
+      <Timer time={time} activeTag={activeTag} updateTime={updateTime} /> 
       <TagsList tags={tags} addNewTag={addNewTag} updateActiveTag={updateActiveTag} />
     </>
   )
