@@ -1,17 +1,11 @@
 import './TagsList.css'
 import { useRef, useState, useEffect } from 'react';
 
-export default function TagsList({ tags, addNewTag, updateActiveTag }) {
+export default function TagsList({ tags, addNewTag, updateActiveTag, toggleTagsList }) {
     const tagNameInput = useRef();
     const tagColorInput = useRef();
     const [activeTagId, setActiveTagId] = useState("");
-
-    useEffect(() => {
-        if (tags.length > 0) {
-            const firstTag = tags[0].id;
-            setActiveTagId(firstTag);
-        }
-    }, [])
+    const [newTagFormActive, setNewTagFormActive] = useState(false);
 
     useEffect(() => {
         if(activeTagId == "") {
@@ -33,16 +27,31 @@ export default function TagsList({ tags, addNewTag, updateActiveTag }) {
         }
         tagNameInput.current.value = "";
         tagColorInput.current.value = "";
+        setNewTagFormActive(false);
+    }
+
+    function handleTagsListClose() {
+        toggleTagsList(false);
     }
 
   return (
     <section className="tagsList">
-        <form>
-            <input ref={tagNameInput} type="text" placeholder="New tag name"/>
-            <input ref={tagColorInput} type="text" placeholder="New tag color" />
-            <button onClick={(e) => handleAddTag(e)} type="submit">Create</button>
-            <button>Cancel</button>
-        </form>
+        <button onClick={() => handleTagsListClose()}>Close</button>
+        {
+            !newTagFormActive ? (
+                <button onClick={() => setNewTagFormActive(true)}>Add new tag</button>
+            ) : null
+        }
+        {
+            newTagFormActive ? (
+                <form>
+                    <input ref={tagNameInput} type="text" placeholder="New tag name"/>
+                    <input ref={tagColorInput} type="text" placeholder="New tag color" />
+                    <button onClick={(e) => handleAddTag(e)} type="submit">Create</button>
+                    <button onClick={() => setNewTagFormActive(false)}>Cancel</button>
+                </form>
+            ) : null
+        }
         
         <ul>
             {

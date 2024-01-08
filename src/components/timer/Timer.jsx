@@ -1,7 +1,7 @@
 import './Timer.css'
 import { useState, useEffect, useRef } from 'react'; 
 
-export default function Timer({ time, activeTag, updateTime }) {
+export default function Timer({ time, activeTag, updateTime, toggleTagsList, addTimeRecord }) {
     const [timerRunning, setTimerRunning] = useState(false);
     const [minutes, setMinutes] = useState(time.minutes);
     const [seconds, setSeconds] = useState(time.seconds);
@@ -46,6 +46,24 @@ export default function Timer({ time, activeTag, updateTime }) {
         setUpdateTimeFormActive(false);
     }
 
+    function handleTagsListOpen() {
+        toggleTagsList(true);
+    }
+
+    function endTimer() {
+        setTimerRunning(false);
+        addTimeRecord(createTimeRecord(activeTag));
+        setMinutes(time.minutes);
+        setSeconds(time.seconds);
+    }
+
+    function createTimeRecord(tag) {
+        const goalTime = (time.minutes * 60) + time.seconds;    // convert to seconds
+        const timeLeft = (minutes * 60) + seconds;
+        const completedTime = goalTime - timeLeft;  // in seconds
+        return {id: Date.now().toString(), tag: tag, goalTime: goalTime, completedTime: completedTime};
+    }
+
   return (
     <section className="timer__container">
         <button onClick={() => setUpdateTimeFormActive(true)}>{minutes} : {seconds < 10 ? "0" + seconds : seconds}</button>
@@ -65,11 +83,13 @@ export default function Timer({ time, activeTag, updateTime }) {
             ) : null
         }
         
-{/* FIX ME -- on click, open list of tags to select */}
-        <button>{activeTag.tagName}</button>
+        <button onClick={() => handleTagsListOpen()}>{activeTag.tagName}</button>
         {
             timerRunning ? (
-                <button onClick={() => setTimerRunning(false)}>Pause</button>
+                <div>
+                    <button onClick={() => setTimerRunning(false)}>Pause</button>
+                    <button onClick={() => endTimer()}>End</button>
+                </div>
             ) : (
                 <button onClick={() => setTimerRunning(true)}>Start Focus</button>
             )

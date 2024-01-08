@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Timer, TagsList } from "./components/index"
 
 function App() {
@@ -23,23 +23,22 @@ function App() {
       color: "#8e4162"
     }
   ]);
+  const [timeRecords, setTimeRecords] = useState([]);
 
   const [activeTag, setActiveTag] = useState({});
-  
+  const [tagsListOpen, setTagsListOpen] = useState(false);
+
+
+  useEffect(() => {
+    if (tags.length > 0) {
+        const firstTag = tags[0];
+        setActiveTag(firstTag);
+    }
+}, [])
+
 function updateTime(newMin, newSec) {
   setTime(t => ({...t, minutes: newMin, seconds: newSec}));
 }
-
-/*
-  create list of objects to hold previous run timers
-      loop through those to display the circles on the screen
-    {
-      tag
-      total time
-      completed time
-    }
-
-*/
 
 function addNewTag(newName, newColor){
   setTags(prevState => {
@@ -47,15 +46,28 @@ function addNewTag(newName, newColor){
   })
 }
 
+function toggleTagsList(toggle) {
+  setTagsListOpen(toggle);
+}
+
 function updateActiveTag(id) {
   const selectedTag = tags.find(tag => tag.id === id)
   setActiveTag(selectedTag);
 }
 
+function addTimeRecord(record) {
+  setTimeRecords([...timeRecords, record]);
+}
+
   return (
     <>
-      <Timer time={time} activeTag={activeTag} updateTime={updateTime} /> 
-      <TagsList tags={tags} addNewTag={addNewTag} updateActiveTag={updateActiveTag} />
+      <Timer time={time} activeTag={activeTag} updateTime={updateTime} toggleTagsList={toggleTagsList} addTimeRecord={addTimeRecord} /> 
+      {
+        tagsListOpen ? (
+          <TagsList tags={tags} addNewTag={addNewTag} updateActiveTag={updateActiveTag} toggleTagsList={toggleTagsList} />
+        ) : null
+      }
+      
     </>
   )
 }
