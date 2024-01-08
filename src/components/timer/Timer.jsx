@@ -6,9 +6,20 @@ export default function Timer({ time, activeTag, updateTime, toggleTagsList, add
     const [minutes, setMinutes] = useState(time.minutes);
     const [seconds, setSeconds] = useState(time.seconds);
     const [updateTimeFormActive, setUpdateTimeFormActive] = useState(false);
+    const [currentTimer, setCurrentTimer] = useState("focus"); // options: focus or break
 
     const minInput = useRef();
     const secInput = useRef();
+
+    useEffect(() => {
+        if (currentTimer === "focus") {
+            setMinutes(time.minutes);
+            setSeconds(time.seconds);
+        } else {
+            setMinutes(5);
+            setSeconds(0);
+        }
+    }, [currentTimer])
 
     let timer;
     useEffect(() => {
@@ -19,7 +30,6 @@ export default function Timer({ time, activeTag, updateTime, toggleTagsList, add
         
             return () => clearInterval(timer);
         }
-// FIX ME -- add functionality to end the timer
         else {
             clearInterval(timer);
         }
@@ -28,8 +38,18 @@ export default function Timer({ time, activeTag, updateTime, toggleTagsList, add
 
     useEffect(() => {
         if (seconds < 0) {
-            setMinutes(minutes - 1);
-            setSeconds(59);
+            if (minutes === 0) {
+                clearInterval(timer);
+                endTimer();
+                if (currentTimer === "focus") {
+                    setCurrentTimer("break");
+                } else {
+                    setCurrentTimer("focus");
+                }
+            } else {
+                setMinutes(minutes - 1);
+                setSeconds(59);
+            }
         }
     }, [seconds])
 
@@ -52,9 +72,11 @@ export default function Timer({ time, activeTag, updateTime, toggleTagsList, add
 
     function endTimer() {
         setTimerRunning(false);
-        addTimeRecord(createTimeRecord(activeTag));
-        setMinutes(time.minutes);
-        setSeconds(time.seconds);
+        if (currentTimer === "focus") {
+            addTimeRecord(createTimeRecord(activeTag));
+        } else {
+            setCurrentTimer("focus");
+        }
     }
 
     function createTimeRecord(tag) {
@@ -90,8 +112,10 @@ export default function Timer({ time, activeTag, updateTime, toggleTagsList, add
                     <button onClick={() => setTimerRunning(false)}>Pause</button>
                     <button onClick={() => endTimer()}>End</button>
                 </div>
-            ) : (
+            ) : currentTimer === "focus" ? (
                 <button onClick={() => setTimerRunning(true)}>Start Focus</button>
+            ) : (
+                <button onClick={() => setTimerRunning(true)}>Start Break</button>
             )
         }
     </section>

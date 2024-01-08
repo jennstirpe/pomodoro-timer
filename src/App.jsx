@@ -3,8 +3,8 @@ import { Timer, TagsList } from "./components/index"
 
 function App() {
   const [time, setTime] = useState({
-    minutes: 22,
-    seconds: 6,
+    minutes: 0,
+    seconds: 5,
   })
 
   const [tags, setTags] = useState([{
@@ -58,6 +58,10 @@ function updateActiveTag(id) {
 function addTimeRecord(record) {
   setTimeRecords([...timeRecords, record]);
 }
+
+useEffect(() => {
+  console.log(timeRecords);
+}, [timeRecords])
 
   return (
     <>
