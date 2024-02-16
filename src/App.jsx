@@ -3,8 +3,8 @@ import { Timer, TagsList } from "./components/index"
 
 function App() {
   const [time, setTime] = useState({
-    minutes: 0,
-    seconds: 5,
+    minutes: 15,
+    seconds: 0,
   })
 
   const [tags, setTags] = useState([{
@@ -59,9 +59,9 @@ function addTimeRecord(record) {
   setTimeRecords([...timeRecords, record]);
 }
 
-useEffect(() => {
-  console.log(timeRecords);
-}, [timeRecords])
+// useEffect(() => {
+//   console.log(timeRecords);
+// }, [timeRecords])
 
   return (
     <>

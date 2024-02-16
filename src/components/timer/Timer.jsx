@@ -60,7 +60,15 @@ export default function Timer({ time, activeTag, updateTime, toggleTagsList, add
 
     function handleTimeUpdate(e) {
         e.preventDefault();
-        updateTime(parseInt(minInput.current.value), parseInt(secInput.current.value));
+        let newMins = minutes;
+        let newSecs = seconds;
+        if (minInput.current.value !== "") {
+            newMins = parseInt(minInput.current.value);
+        }
+        if (secInput.current.value !== "") {
+            newSecs = parseInt(secInput.current.value);
+        }
+        updateTime(newMins, newSecs);
         minInput.current.value = ""; 
         secInput.current.value = "";
         setUpdateTimeFormActive(false);
