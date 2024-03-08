@@ -1,12 +1,22 @@
+/*
+    Forms
+        - New tag
+    Functionality
+        - Create new tag
+        - Update active tag
+*/
+
 import './TagsList.css'
 import { useRef, useState, useEffect } from 'react';
 
 export default function TagsList({ tags, addNewTag, updateActiveTag, toggleTagsList }) {
+// Input for new tag form
     const tagNameInput = useRef();
     const tagColorInput = useRef();
     const [activeTagId, setActiveTagId] = useState("");
-    const [newTagFormActive, setNewTagFormActive] = useState(false);
+    const [newTagFormActive, setNewTagFormActive] = useState(false);    // New tag form open/closed
 
+// Change active tag to user selection 
     useEffect(() => {
         if(activeTagId == "") {
             return;
@@ -15,7 +25,7 @@ export default function TagsList({ tags, addNewTag, updateActiveTag, toggleTagsL
         }
     }, [activeTagId])
     
-
+// Create new tag with user input
     function handleAddTag(e) {
         e.preventDefault();
         const tagName = tagNameInput.current.value;
@@ -30,6 +40,7 @@ export default function TagsList({ tags, addNewTag, updateActiveTag, toggleTagsL
         setNewTagFormActive(false);
     }
 
+// Close tag list 
     function handleTagsListClose() {
         toggleTagsList(false);
     }
@@ -44,7 +55,7 @@ export default function TagsList({ tags, addNewTag, updateActiveTag, toggleTagsL
         }
         {
             newTagFormActive ? (
-                <form>
+                <form id="new_tag">
                     <input ref={tagNameInput} type="text" placeholder="New tag name"/>
                     <input ref={tagColorInput} type="text" placeholder="New tag color" />
                     <button onClick={(e) => handleAddTag(e)} type="submit">Create</button>

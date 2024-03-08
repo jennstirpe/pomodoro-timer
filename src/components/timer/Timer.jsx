@@ -1,27 +1,42 @@
+/*
+  State
+    - timer countdown / display
+    - focus / break timers
+    - current timer tag
+  Forms
+    - Change time
+    - open tags list
+  Functionality
+    - Start - Pause - End timer
+    - Timer countdown
+*/
+
 import './Timer.css'
 import { useState, useEffect, useRef } from 'react'; 
 
 export default function Timer({ time, activeTag, updateTime, toggleTagsList, addTimeRecord }) {
-    const [timerRunning, setTimerRunning] = useState(false);
-    const [minutes, setMinutes] = useState(time.minutes);
+    const [timerRunning, setTimerRunning] = useState(false);    // Timer running or stopped
+    const [minutes, setMinutes] = useState(time.minutes);   // Minutes & seconds as timer running
     const [seconds, setSeconds] = useState(time.seconds);
-    const [updateTimeFormActive, setUpdateTimeFormActive] = useState(false);
+    const [updateTimeFormActive, setUpdateTimeFormActive] = useState(false);    // Form to update timer length open/closed
     const [currentTimer, setCurrentTimer] = useState("focus"); // options: focus or break
 
-    const minInput = useRef();
+    const minInput = useRef();      // Minute and second input in form to update timer length
     const secInput = useRef();
+    let timer;  // Keep time as timer runs
 
+// Set time clock based on whether a focus or break
     useEffect(() => {
         if (currentTimer === "focus") {
             setMinutes(time.minutes);
             setSeconds(time.seconds);
         } else {
-            setMinutes(5);
-            setSeconds(0);
+            setMinutes(0);
+            setSeconds(3);
         }
     }, [currentTimer])
 
-    let timer;
+// Handle countdown while timer is running
     useEffect(() => {
         if(timerRunning === true) {
             timer = setInterval(() => {
@@ -36,6 +51,7 @@ export default function Timer({ time, activeTag, updateTime, toggleTagsList, add
         
     }, [timerRunning])
 
+// Handle seconds counting down
     useEffect(() => {
         if (seconds < 0) {
             if (minutes === 0) {
@@ -53,11 +69,13 @@ export default function Timer({ time, activeTag, updateTime, toggleTagsList, add
         }
     }, [seconds])
 
+// Set clock to timer length
     useEffect(() => {
         setMinutes(time.minutes);
         setSeconds(time.seconds);
       }, [time])
 
+// Handle update to timer length from form
     function handleTimeUpdate(e) {
         e.preventDefault();
         let newMins = minutes;
@@ -74,24 +92,31 @@ export default function Timer({ time, activeTag, updateTime, toggleTagsList, add
         setUpdateTimeFormActive(false);
     }
 
+// Toggle tag list open/close
     function handleTagsListOpen() {
         toggleTagsList(true);
     }
 
+// Handle ending of timer
     function endTimer() {
         setTimerRunning(false);
-        if (currentTimer === "focus") {
+        if (currentTimer === "focus") {     // Record completed focus timer
             addTimeRecord(createTimeRecord(activeTag));
+            setMinutes(time.minutes);   // Reset timer 
+            setSeconds(time.seconds);
         } else {
-            setCurrentTimer("focus");
+            setCurrentTimer("focus");   // Timer ended early, set back to focus timer
+            setMinutes(time.minutes);
+            setSeconds(time.seconds);
         }
     }
 
+// Create a record for completed focus timer
     function createTimeRecord(tag) {
         const goalTime = (time.minutes * 60) + time.seconds;    // convert to seconds
         const timeLeft = (minutes * 60) + seconds;
         const completedTime = goalTime - timeLeft;  // in seconds
-        return {id: Date.now().toString(), tag: tag, goalTime: goalTime, completedTime: completedTime};
+        return {id: Date.now().toString(), tag: tag, goalTime: goalTime, completedTime: completedTime}; // Create record
     }
 
   return (
@@ -99,7 +124,7 @@ export default function Timer({ time, activeTag, updateTime, toggleTagsList, add
         <button onClick={() => setUpdateTimeFormActive(true)}>{minutes} : {seconds < 10 ? "0" + seconds : seconds}</button>
         {
             updateTimeFormActive ? (
-                <form>
+                <form id="update_time">
                     <label>
                         <input ref={minInput} type="number" placeholder="Minutes" />
                         Minutes
@@ -118,13 +143,17 @@ export default function Timer({ time, activeTag, updateTime, toggleTagsList, add
             timerRunning ? (
                 <div>
                     <button onClick={() => setTimerRunning(false)}>Pause</button>
-                    <button onClick={() => endTimer()}>End</button>
                 </div>
             ) : currentTimer === "focus" ? (
                 <button onClick={() => setTimerRunning(true)}>Start Focus</button>
             ) : (
                 <button onClick={() => setTimerRunning(true)}>Start Break</button>
             )
+        }
+        {
+            seconds < time.seconds ? (
+                <button onClick={() => endTimer()}>End</button>
+            ) : null
         }
     </section>
   )
