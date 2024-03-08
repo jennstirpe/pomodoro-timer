@@ -25,6 +25,8 @@ export default function Timer({ time, activeTag, updateTime, toggleTagsList, add
     const secInput = useRef();
     let timer;  // Keep time as timer runs
 
+// TIMER
+// SET TIMER / UPDATES
 // Set time clock based on whether a focus or break
     useEffect(() => {
         if (currentTimer === "focus") {
@@ -35,7 +37,30 @@ export default function Timer({ time, activeTag, updateTime, toggleTagsList, add
             setSeconds(3);
         }
     }, [currentTimer])
+// Set clock to timer length
+    useEffect(() => {
+        setMinutes(time.minutes);
+        setSeconds(time.seconds);
+    }, [time])
 
+// Handle update to timer length from form
+    function handleTimeUpdate(e) {
+        e.preventDefault();
+        let newMins = minutes;
+        let newSecs = seconds;
+        if (minInput.current.value !== "") {
+            newMins = parseInt(minInput.current.value);
+        }
+        if (secInput.current.value !== "") {
+            newSecs = parseInt(secInput.current.value);
+        }
+        updateTime(newMins, newSecs);
+        minInput.current.value = ""; 
+        secInput.current.value = "";
+        setUpdateTimeFormActive(false);
+    }
+
+// COUNTDOWN
 // Handle countdown while timer is running
     useEffect(() => {
         if(timerRunning === true) {
@@ -69,34 +94,6 @@ export default function Timer({ time, activeTag, updateTime, toggleTagsList, add
         }
     }, [seconds])
 
-// Set clock to timer length
-    useEffect(() => {
-        setMinutes(time.minutes);
-        setSeconds(time.seconds);
-      }, [time])
-
-// Handle update to timer length from form
-    function handleTimeUpdate(e) {
-        e.preventDefault();
-        let newMins = minutes;
-        let newSecs = seconds;
-        if (minInput.current.value !== "") {
-            newMins = parseInt(minInput.current.value);
-        }
-        if (secInput.current.value !== "") {
-            newSecs = parseInt(secInput.current.value);
-        }
-        updateTime(newMins, newSecs);
-        minInput.current.value = ""; 
-        secInput.current.value = "";
-        setUpdateTimeFormActive(false);
-    }
-
-// Toggle tag list open/close
-    function handleTagsListOpen() {
-        toggleTagsList(true);
-    }
-
 // Handle ending of timer
     function endTimer() {
         setTimerRunning(false);
@@ -111,11 +108,23 @@ export default function Timer({ time, activeTag, updateTime, toggleTagsList, add
         }
     }
 
+// TAGS
+// Toggle tag list open/close
+    function handleTagsListOpen() {
+        toggleTagsList(true);
+    }
+
+// RECORDS
 // Create a record for completed focus timer
     function createTimeRecord(tag) {
         const goalTime = (time.minutes * 60) + time.seconds;    // convert to seconds
         const timeLeft = (minutes * 60) + seconds;
-        const completedTime = goalTime - timeLeft;  // in seconds
+        let completedTime; // in seconds
+        if(timeLeft < 0) {
+            completedTime = goalTime;
+        } else {
+            completedTime = goalTime - timeLeft;
+        };
         return {id: Date.now().toString(), tag: tag, goalTime: goalTime, completedTime: completedTime}; // Create record
     }
 

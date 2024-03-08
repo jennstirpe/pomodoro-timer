@@ -17,7 +17,7 @@ import { Timer, TagsList } from "./components/index"
 
 function App() {
 // STATE -  TIMER LENGTH, TAG LIST, ACTIVE TAG, RECORDS, TOGGLE TAG LIST
-  const [time, setTime] = useState({minutes: 0, seconds: 4,})
+  const [time, setTime] = useState({minutes: 0, seconds: 10,})
   const [tags, setTags] = useState([{
         id: "1",
         tagName: "Focus",
@@ -38,6 +38,13 @@ function App() {
   const [timeRecords, setTimeRecords] = useState([]);
   const [tagsListOpen, setTagsListOpen] = useState(false);
 
+// TIMER 
+// Update TIMER LENGTH
+  function updateTime(newMin, newSec) {      // 
+    setTime(t => ({...t, minutes: newMin, seconds: newSec}));
+  }
+
+// TAGS
 // Set INITAL TAG by default
   useEffect(() => {     
     if (tags.length > 0) {
@@ -46,9 +53,10 @@ function App() {
     }
   }, [])
 
-// Update TIMER LENGTH
-  function updateTime(newMin, newSec) {      // 
-    setTime(t => ({...t, minutes: newMin, seconds: newSec}));
+// Change ACTIVE TAG
+  function updateActiveTag(id) {
+    const selectedTag = tags.find(tag => tag.id === id)
+    setActiveTag(selectedTag);
   }
 
 // Create and add NEW TAG
@@ -63,20 +71,11 @@ function App() {
     setTagsListOpen(toggle);
   }
 
-// Change ACTIVE TAG
-  function updateActiveTag(id) {
-    const selectedTag = tags.find(tag => tag.id === id)
-    setActiveTag(selectedTag);
-  }
-
+// RECORDS
 // Create time RECORD
   function addTimeRecord(record) {
     setTimeRecords([...timeRecords, record]);
   }
-
-// useEffect(() => {
-//   console.log(timeRecords);
-// }, [timeRecords])
 
   return (
     <>
@@ -86,7 +85,21 @@ function App() {
           <TagsList tags={tags} addNewTag={addNewTag} updateActiveTag={updateActiveTag} toggleTagsList={toggleTagsList} />
         ) : null
       }
+      <ul>
+        {
+          timeRecords.map(record => {
+            let percentComplete = record.completedTime / record.goalTime;
+            let completeSize = 3;
+            let size = percentComplete * completeSize + "rem";
       
+            return (
+              <li key={record.id} style={{width: size, height: size, background: record.tag.color}}>
+                <p>{record.completedTime}</p>
+              </li>
+            )
+          })
+        }
+      </ul>
     </>
   )
 }
